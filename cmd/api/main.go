@@ -26,14 +26,14 @@ func main() {
 	}
 
 	// Inicializar use cases
-	usecases := NewUsecases(deps, cfg)
+	appUsecases := NewUsecases(deps, cfg)
 
 	// Configurar Gin
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	// Configurar rutas
-	setupRoutes(r, usecases)
+	setupRoutes(r, appUsecases)
 
 	// Iniciar servidor
 	if err := r.Run(":" + cfg.Port); err != nil {

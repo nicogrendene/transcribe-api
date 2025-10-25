@@ -56,6 +56,18 @@ func LoadConfig() (Config, error) {
 		}
 	}
 
+	if maxTopK := getEnvOrDefault("MAX_TOP_K", ""); maxTopK != "" {
+		if i, err := strconv.Atoi(maxTopK); err == nil {
+			config.MaxTopK = i
+		}
+	}
+
+	if defaultTopK := getEnvOrDefault("DEFAULT_TOP_K", ""); defaultTopK != "" {
+		if i, err := strconv.Atoi(defaultTopK); err == nil {
+			config.DefaultTopK = i
+		}
+	}
+
 	if err := config.validate(); err != nil {
 		return config, err
 	}
