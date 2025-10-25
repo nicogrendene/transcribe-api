@@ -42,17 +42,24 @@ func LoadConfig() (Config, error) {
 		return config, fmt.Errorf("no se pudo cargar archivo .env: %v", err)
 	}
 
-	// Variables opcionales (con valores por defecto)
+	// Variables requeridas
 	config.OpenAIAPIKey = getEnvOrDefault("OPENAI_API_KEY", "")
 	config.PineconeAPIKey = getEnvOrDefault("PINECONE_API_KEY", "")
-	config.IndexName = getEnvOrDefault("INDEX_NAME", config.IndexName)
-	config.Port = getEnvOrDefault("PORT", config.Port)
-	config.VideosPath = getEnvOrDefault("VIDEOS_PATH", config.VideosPath)
+	config.IndexName = getEnvOrDefault("INDEX_NAME", "")
+	config.EmbeddingModel = getEnvOrDefault("EMBEDDING_MODEL", "")
+	config.Port = getEnvOrDefault("PORT", "")
+	config.VideosPath = getEnvOrDefault("VIDEOS_PATH", "")
 
 	// Variables numéricas opcionales
 	if threshold := getEnvOrDefault("MIN_SCORE_THRESHOLD", ""); threshold != "" {
 		if f, err := strconv.ParseFloat(threshold, 64); err == nil {
 			config.MinScoreThreshold = f
+		}
+	}
+
+	if dimension := getEnvOrDefault("EMBEDDING_DIMENSION", ""); dimension != "" {
+		if i, err := strconv.Atoi(dimension); err == nil {
+			config.EmbeddingDimension = i
 		}
 	}
 
@@ -65,6 +72,12 @@ func LoadConfig() (Config, error) {
 	if defaultTopK := getEnvOrDefault("DEFAULT_TOP_K", ""); defaultTopK != "" {
 		if i, err := strconv.Atoi(defaultTopK); err == nil {
 			config.DefaultTopK = i
+		}
+	}
+
+	if price := getEnvOrDefault("EMBEDDING_PRICE_PER_1K", ""); price != "" {
+		if f, err := strconv.ParseFloat(price, 64); err == nil {
+			config.EmbeddingPricePer1K = f
 		}
 	}
 
@@ -89,6 +102,18 @@ func (c *Config) validate() error {
 
 	if c.PineconeAPIKey == "" {
 		return fmt.Errorf("PINECONE_API_KEY es requerida")
+	}
+
+	if c.IndexName == "" {
+		return fmt.Errorf("INDEX_NAME es requerida")
+	}
+
+	if c.Port == "" {
+		return fmt.Errorf("PORT es requerida")
+	}
+
+	if c.VideosPath == "" {
+		return fmt.Errorf("VIDEOS_PATH es requerida")
 	}
 
 	if c.MinScoreThreshold < 0 || c.MinScoreThreshold > 1 {
