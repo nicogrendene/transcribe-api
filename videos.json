@@ -1,0 +1,14 @@
+{
+  "videos": [
+    {
+      "id": "diego-esteve-h4ck3d",
+      "title": "Diego Esteve, codirector de la Licenciatura en Ciberseguridad UP, en H4ck3d Security Conference - Universidad de Palermo",
+      "source_file": "Diego Esteve, codirector de la Licenciatura en Ciberseguridad UP, en H4ck3d Security Conference - Universidad de Palermo",
+      "location": "http://localhost:8000/video/Diego%20Esteve%2C%20codirector%20de%20la%20Licenciatura%20en%20Ciberseguridad%20UP%2C%20en%20H4ck3d%20Security%20Conference%20-%20Universidad%20de%20Palermo.mp4",
+      "duration": "1928",
+      "description": "Conferencia sobre Zero Trust y ciberseguridad"
+    }
+  ],
+  "total": 1,
+  "base_path": "http://localhost:8000/video/"
+}
