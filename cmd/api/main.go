@@ -56,7 +56,7 @@ func setupRoutes(r *gin.Engine, usecases Usecases) {
 	})
 
 	// Grupo de rutas con prefijo /api/transcribe
-	api := r.Group("/api/transcribe")
+	api := r.Group("/api/transcription")
 	{
 		api.GET("/health", handlers.HealthCheck(usecases.HealthUseCase))
 		api.GET("/stats", handlers.GetStats(usecases.StatsUseCase))
