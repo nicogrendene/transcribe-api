@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/config"
@@ -35,11 +34,11 @@ func main() {
 	// Configurar rutas
 	setupRoutes(r, appUsecases)
 
+	log.Println("✅ Iniciando servidor en el puerto " + cfg.Port)
 	// Iniciar servidor
 	if err := r.Run(":" + cfg.Port); err != nil {
 		log.Fatalf("❌ Error iniciando servidor: %v", err)
 	}
-	log.Println("✅ API lista → http://localhost:" + cfg.Port)
 }
 
 // setupRoutes configura todas las rutas de la API
@@ -56,15 +55,15 @@ func setupRoutes(r *gin.Engine, usecases Usecases) {
 		c.Next()
 	})
 
-	// Rutas
-	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusPermanentRedirect, "/health")
-	})
-	r.GET("/health", handlers.HealthCheck(usecases.HealthUseCase))
-	r.GET("/stats", handlers.GetStats(usecases.StatsUseCase))
-	r.GET("/videos", handlers.GetVideos(usecases.VideoUseCase))
-	r.GET("/video/:filename/thumbnail", handlers.ServeThumbnail(usecases.VideoUseCase))
-	r.GET("/video/:filename/subtitles", handlers.ServeSubtitles(usecases.VideoUseCase))
-	r.GET("/video/:filename", handlers.ServeVideo(usecases.VideoUseCase))
-	r.POST("/buscar", handlers.Buscar(usecases.SearchUseCase))
+	// Grupo de rutas con prefijo /api/transcribe
+	api := r.Group("/api/transcribe")
+	{
+		api.GET("/health", handlers.HealthCheck(usecases.HealthUseCase))
+		api.GET("/stats", handlers.GetStats(usecases.StatsUseCase))
+		api.GET("/videos", handlers.GetVideos(usecases.VideoUseCase))
+		api.GET("/video/:filename/thumbnail", handlers.ServeThumbnail(usecases.VideoUseCase))
+		api.GET("/video/:filename/subtitles", handlers.ServeSubtitles(usecases.VideoUseCase))
+		api.GET("/video/:filename", handlers.ServeVideo(usecases.VideoUseCase))
+		api.POST("/buscar", handlers.Buscar(usecases.SearchUseCase))
+	}
 }

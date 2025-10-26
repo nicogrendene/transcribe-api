@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -84,6 +85,19 @@ func LoadConfig() (Config, error) {
 	if err := config.validate(); err != nil {
 		return config, err
 	}
+
+	log.Println("✅ Configuración cargada correctamente")
+	log.Println("OPENAI_API_KEY: " + config.OpenAIAPIKey)
+	log.Println("PINECONE_API_KEY: " + config.PineconeAPIKey)
+	log.Println("INDEX_NAME: " + config.IndexName)
+	log.Println("EMBEDDING_MODEL: " + config.EmbeddingModel)
+	log.Println("EMBEDDING_DIMENSION: " + strconv.Itoa(config.EmbeddingDimension))
+	log.Println("MIN_SCORE_THRESHOLD: " + strconv.FormatFloat(config.MinScoreThreshold, 'f', -1, 64))
+	log.Println("MAX_TOP_K: " + strconv.Itoa(config.MaxTopK))
+	log.Println("DEFAULT_TOP_K: " + strconv.Itoa(config.DefaultTopK))
+	log.Println("EMBEDDING_PRICE_PER_1K: " + strconv.FormatFloat(config.EmbeddingPricePer1K, 'f', -1, 64))
+	log.Println("PORT: " + config.Port)
+	log.Println("VIDEOS_PATH: " + config.VideosPath)
 
 	return config, nil
 }
