@@ -8,7 +8,6 @@ import (
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
-// GetVideos retorna un handler para listar videos
 func GetVideos(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		jsonData, err := videoUseCase.GetVideos()

@@ -8,7 +8,6 @@ import (
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
-// GetStats retorna un handler para estadísticas
 func GetStats(statsUseCase usecases.StatsUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		stats, err := statsUseCase.GetStats()

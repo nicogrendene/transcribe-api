@@ -8,8 +8,7 @@ import (
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
-// ServeSubtitles retorna un handler para servir subtítulos
-func ServeSubtitles(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
+func ServeSummary(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		if id == "" {
@@ -19,10 +18,10 @@ func ServeSubtitles(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 			return
 		}
 
-		subtitlePath, err := videoUseCase.GetSubtitles(id)
+		subtitlePath, err := videoUseCase.GetSummary(id)
 		if err != nil {
 			c.JSON(http.StatusNotFound, models.ErrorResponse{
-				Error:   "Subtitle file not found",
+				Error:   "Summary file not found",
 				Details: err.Error(),
 			})
 			return

@@ -8,18 +8,17 @@ import (
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
-// ServeVideo retorna un handler para servir videos
 func ServeVideo(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		filename := c.Param("filename")
-		if filename == "" {
+		id := c.Param("id")
+		if id == "" {
 			c.JSON(http.StatusBadRequest, models.ErrorResponse{
-				Error: "filename parameter is required",
+				Error: "id parameter is required",
 			})
 			return
 		}
 
-		videoPath, err := videoUseCase.GetVideo(filename)
+		videoPath, err := videoUseCase.GetVideo(id)
 		if err != nil {
 			c.JSON(http.StatusNotFound, models.ErrorResponse{
 				Error:   "Video file not found",

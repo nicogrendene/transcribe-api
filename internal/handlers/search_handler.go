@@ -8,7 +8,6 @@ import (
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
-// Buscar retorna un handler para búsqueda
 func Buscar(searchUseCase usecases.SearchUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req models.BusquedaRequest

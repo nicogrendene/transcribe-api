@@ -10,9 +10,9 @@ import (
 // ServeThumbnail retorna un handler para servir miniaturas
 func ServeThumbnail(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		filename := c.Param("filename")
+		id := c.Param("id")
 
-		thumbnailPath, err := videoUseCase.GetThumbnail(filename)
+		thumbnailPath, err := videoUseCase.GetThumbnail(id)
 		if err != nil {
 			// Si no existe, devolver un placeholder SVG simple
 			svgPlaceholder := `<svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">

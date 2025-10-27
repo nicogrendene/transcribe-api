@@ -8,7 +8,6 @@ import (
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
-// HealthCheck retorna un handler para health check
 func HealthCheck(healthUseCase usecases.HealthUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		response, err := healthUseCase.CheckHealth()

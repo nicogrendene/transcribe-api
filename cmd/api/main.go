@@ -58,9 +58,10 @@ func setupRoutes(r *gin.Engine, usecases Usecases) {
 	r.GET("/health", handlers.HealthCheck(usecases.HealthUseCase))
 	r.GET("/stats", handlers.GetStats(usecases.StatsUseCase))
 	r.GET("/videos", handlers.GetVideos(usecases.VideoUseCase))
-	r.GET("/video/:filename/thumbnail", handlers.ServeThumbnail(usecases.VideoUseCase))
-	r.GET("/video/:filename/subtitles", handlers.ServeSubtitles(usecases.VideoUseCase))
-	r.GET("/video/:filename", handlers.ServeVideo(usecases.VideoUseCase))
+	r.GET("/video/:id/thumbnail", handlers.ServeThumbnail(usecases.VideoUseCase))
+	r.GET("/video/:id/subtitles", handlers.ServeSubtitles(usecases.VideoUseCase))
+	r.GET("/video/:id/summary", handlers.ServeSummary(usecases.VideoUseCase))
+	r.GET("/video/:id", handlers.ServeVideo(usecases.VideoUseCase))
 	r.POST("/buscar", handlers.Buscar(usecases.SearchUseCase))
 
 }
