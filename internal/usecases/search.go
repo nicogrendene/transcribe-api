@@ -24,7 +24,7 @@ func NewSearchUseCase(openaiService *services.OpenAIService, pineconeService *se
 	}
 }
 
-// Search realiza una búsqueda vectorial
+// Search realiza una búsqueda vectorial y genera una respuesta con OpenAI
 func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchResponse, error) {
 	// Validar parámetros
 	if query == "" {
@@ -41,7 +41,7 @@ func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchRespon
 		return nil, fmt.Errorf("error generando embedding: %v", err)
 	}
 
-	// Calcular costo
+	// Calcular costo inicial
 	costo := float64(tokens) * s.config.EmbeddingPricePer1K / 1000.0
 
 	// Buscar en Pinecone
@@ -52,11 +52,35 @@ func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchRespon
 
 	filtrados := s.filterByScore(res, s.config.MinScoreThreshold)
 
+	// Generar respuesta con OpenAI si hay resultados
+	var generatedAnswer string
+	if len(filtrados) > 0 {
+		// Extraer textos de los resultados
+		contextTexts := make([]string, 0, len(filtrados))
+		for _, result := range filtrados {
+			if result.Text != "" {
+				contextTexts = append(contextTexts, result.Text)
+			}
+		}
+
+		// Generar respuesta con OpenAI
+		answer, chatTokens, err := s.openaiService.GenerateAnswer(query, contextTexts)
+		if err != nil {
+			// Si falla la generación de respuesta, continuar sin ella
+			fmt.Printf("⚠️ Error generando respuesta: %v\n", err)
+		} else {
+			generatedAnswer = answer
+			// Agregar costo de chat
+			costo += float64(chatTokens) * s.config.ChatPricePer1K / 1000.0
+		}
+	}
+
 	return &models.SearchResponse{
-		Query:    query,
-		Results:  filtrados,
-		Total:    len(filtrados),
-		CostoUSD: costo,
+		Query:           query,
+		Results:         filtrados,
+		Total:           len(filtrados),
+		GeneratedAnswer: generatedAnswer,
+		CostoUSD:        costo,
 	}, nil
 }
 

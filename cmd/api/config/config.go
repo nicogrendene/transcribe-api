@@ -20,6 +20,10 @@ type Config struct {
 	EmbeddingModel     string
 	EmbeddingDimension int
 
+	// OpenAI Chat
+	ChatModel      string
+	ChatPricePer1K float64
+
 	// Umbrales y límites
 	MinScoreThreshold float64
 	MaxTopK           int
@@ -48,6 +52,7 @@ func LoadConfig() (Config, error) {
 	config.PineconeAPIKey = getEnvOrDefault("PINECONE_API_KEY", "")
 	config.IndexName = getEnvOrDefault("INDEX_NAME", "")
 	config.EmbeddingModel = getEnvOrDefault("EMBEDDING_MODEL", "")
+	config.ChatModel = getEnvOrDefault("CHAT_MODEL", "")
 	config.Port = getEnvOrDefault("PORT", "")
 	config.VideosPath = getEnvOrDefault("VIDEOS_PATH", "")
 
@@ -82,6 +87,12 @@ func LoadConfig() (Config, error) {
 		}
 	}
 
+	if chatPrice := getEnvOrDefault("CHAT_PRICE_PER_1K", ""); chatPrice != "" {
+		if f, err := strconv.ParseFloat(chatPrice, 64); err == nil {
+			config.ChatPricePer1K = f
+		}
+	}
+
 	if err := config.validate(); err != nil {
 		return config, err
 	}
@@ -92,10 +103,12 @@ func LoadConfig() (Config, error) {
 	log.Println("INDEX_NAME: " + config.IndexName)
 	log.Println("EMBEDDING_MODEL: " + config.EmbeddingModel)
 	log.Println("EMBEDDING_DIMENSION: " + strconv.Itoa(config.EmbeddingDimension))
+	log.Println("CHAT_MODEL: " + config.ChatModel)
 	log.Println("MIN_SCORE_THRESHOLD: " + strconv.FormatFloat(config.MinScoreThreshold, 'f', -1, 64))
 	log.Println("MAX_TOP_K: " + strconv.Itoa(config.MaxTopK))
 	log.Println("DEFAULT_TOP_K: " + strconv.Itoa(config.DefaultTopK))
 	log.Println("EMBEDDING_PRICE_PER_1K: " + strconv.FormatFloat(config.EmbeddingPricePer1K, 'f', -1, 64))
+	log.Println("CHAT_PRICE_PER_1K: " + strconv.FormatFloat(config.ChatPricePer1K, 'f', -1, 64))
 	log.Println("PORT: " + config.Port)
 	log.Println("VIDEOS_PATH: " + config.VideosPath)
 
@@ -120,6 +133,14 @@ func (c *Config) validate() error {
 
 	if c.IndexName == "" {
 		return fmt.Errorf("INDEX_NAME es requerida")
+	}
+
+	if c.EmbeddingModel == "" {
+		return fmt.Errorf("EMBEDDING_MODEL es requerida")
+	}
+
+	if c.ChatModel == "" {
+		return fmt.Errorf("CHAT_MODEL es requerida")
 	}
 
 	if c.Port == "" {

@@ -18,7 +18,7 @@ func ServeSummary(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 			return
 		}
 
-		subtitlePath, err := videoUseCase.GetSummary(id)
+		summary, err := videoUseCase.GetSummary(id)
 		if err != nil {
 			c.JSON(http.StatusNotFound, models.ErrorResponse{
 				Error:   "Summary file not found",
@@ -27,9 +27,13 @@ func ServeSummary(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 			return
 		}
 
-		c.Header("Content-Type", "text/vtt; charset=utf-8")
-		c.Header("Cache-Control", "public, max-age=3600")
+		// Headers para evitar cache
+		c.Header("Content-Type", "text/plain; charset=utf-8")
 		c.Header("Access-Control-Allow-Origin", "*")
-		c.File(subtitlePath)
+		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+		c.Header("Pragma", "no-cache")
+		c.Header("Expires", "0")
+
+		c.String(http.StatusOK, summary)
 	}
 }

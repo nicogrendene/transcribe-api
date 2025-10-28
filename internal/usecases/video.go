@@ -84,9 +84,16 @@ func (v *VideoUseCaseImpl) GetSummary(id string) (string, error) {
 
 	summaryPath := filepath.Join(v.config.VideosPath, id, "summary.txt")
 
-	if _, err := os.Stat(summaryPath); os.IsNotExist(err) {
-		return "", fmt.Errorf("archivo de resumen no encontrado")
+	file, err := os.Open(summaryPath)
+	defer file.Close()
+	if err != nil {
+		return "", fmt.Errorf("no se encontrado por archivo de summary.txt")
 	}
 
-	return summaryPath, nil
+	content, err := io.ReadAll(file)
+	if err != nil {
+		return "", fmt.Errorf("no se encontrado por archivo de summary.txt")
+	}
+
+	return string(content), nil
 }

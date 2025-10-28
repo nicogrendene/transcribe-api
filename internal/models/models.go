@@ -15,10 +15,11 @@ type ChunkResponse struct {
 }
 
 type SearchResponse struct {
-	Query    string          `json:"query"`
-	Results  []ChunkResponse `json:"results"`
-	Total    int             `json:"total"`
-	CostoUSD float64         `json:"costo_usd,omitempty"`
+	Query           string          `json:"query"`
+	Results         []ChunkResponse `json:"results"`
+	Total           int             `json:"total"`
+	GeneratedAnswer string          `json:"generated_answer,omitempty"`
+	CostoUSD        float64         `json:"costo_usd,omitempty"`
 }
 
 type StatsResponse struct {
@@ -52,5 +53,30 @@ type OpenAIEmbeddingResponse struct {
 	Usage struct {
 		PromptTokens int `json:"prompt_tokens"`
 		TotalTokens  int `json:"total_tokens"`
+	} `json:"usage"`
+}
+
+type OpenAIChatRequest struct {
+	Model       string    `json:"model"`
+	Messages    []Message `json:"messages"`
+	MaxTokens   int       `json:"max_tokens,omitempty"`
+	Temperature float64   `json:"temperature,omitempty"`
+}
+
+type Message struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type OpenAIChatResponse struct {
+	Choices []struct {
+		Message struct {
+			Content string `json:"content"`
+		} `json:"message"`
+	} `json:"choices"`
+	Usage struct {
+		PromptTokens     int `json:"prompt_tokens"`
+		CompletionTokens int `json:"completion_tokens"`
+		TotalTokens      int `json:"total_tokens"`
 	} `json:"usage"`
 }

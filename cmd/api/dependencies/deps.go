@@ -17,6 +17,8 @@ func NewDependencies(cfg config.Config) (Dependencies, error) {
 		cfg.OpenAIAPIKey,
 		cfg.EmbeddingModel,
 		cfg.EmbeddingPricePer1K,
+		cfg.ChatModel,
+		cfg.ChatPricePer1K,
 	)
 	if err != nil {
 		return deps, err
