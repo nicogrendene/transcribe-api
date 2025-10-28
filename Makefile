@@ -21,6 +21,7 @@ help:
 	@echo ""
 	@echo "$(YELLOW)Desarrollo:$(NC)"
 	@echo "  make run          - Ejecutar la aplicación"
+	@echo "  make run-bg       - Ejecutar en background con logs"
 	@echo "  make build        - Compilar la aplicación"
 	@echo "  make test         - Ejecutar tests"
 	@echo "  make lint        - Ejecutar linter"
@@ -53,6 +54,17 @@ run: deps
 	@echo "$(GREEN)🚀 Ejecutando API...$(NC)"
 	go run $(MAIN_PATH) $(USECASES_PATH)
 
+## run-bg: Ejecutar en background con logs
+run-bg: deps
+	@echo "$(GREEN)🚀 Ejecutando API en background...$(NC)"
+	@echo "$(GREEN)📝 Logs se guardarán en: transcribe-api.log$(NC)"
+	@echo "=========================================" >> transcribe-api.log
+	@echo "🚀 Nueva sesión iniciada: $$(date)" >> transcribe-api.log
+	@echo "=========================================" >> transcribe-api.log
+	nohup go run $(MAIN_PATH) $(USECASES_PATH) >> transcribe-api.log 2>&1 &
+	@echo "$(GREEN)✅ API ejecutándose en background$(NC)"
+	@echo "$(YELLOW)💡 Para ver logs: tail -f transcribe-api.log$(NC)"
+
 ## test: Ejecutar tests
 test:
 	@echo "$(GREEN)🧪 Ejecutando tests...$(NC)"
@@ -79,6 +91,7 @@ install: build
 clean:
 	@echo "$(GREEN)🧹 Limpiando archivos...$(NC)"
 	rm -rf $(BUILD_DIR)
+	rm -f transcribe-api.log
 	go clean
 	@echo "$(GREEN)✅ Limpieza completada$(NC)"
 
