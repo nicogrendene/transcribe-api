@@ -69,7 +69,7 @@ func NewPineconeService(apiKey, indexName string) (*PineconeService, error) {
 }
 
 // Search realiza una búsqueda vectorial en Pinecone
-func (s *PineconeService) Search(embedding []float32, topK int) ([]models.ChunkResultado, error) {
+func (s *PineconeService) Search(embedding []float32, topK int) ([]models.ChunkResponse, error) {
 	ctx := context.Background()
 	queryReq := &pinecone.QueryByVectorValuesRequest{
 		Vector:          embedding,
@@ -85,22 +85,20 @@ func (s *PineconeService) Search(embedding []float32, topK int) ([]models.ChunkR
 	return s.parseResults(results.Matches), nil
 }
 
-// parseResults convierte los resultados de Pinecone en ChunkResultado
-func (s *PineconeService) parseResults(matches []*pinecone.ScoredVector) []models.ChunkResultado {
-	var resultados []models.ChunkResultado
+func (s *PineconeService) parseResults(matches []*pinecone.ScoredVector) []models.ChunkResponse {
+	var res []models.ChunkResponse
 
 	for _, match := range matches {
 		chunk := s.extractMetadata(match)
 		chunk.Score = match.Score
-		resultados = append(resultados, chunk)
+		res = append(res, chunk)
 	}
 
-	return resultados
+	return res
 }
 
-// extractMetadata extrae los metadatos de un vector de Pinecone
-func (s *PineconeService) extractMetadata(match *pinecone.ScoredVector) models.ChunkResultado {
-	var chunk models.ChunkResultado
+func (s *PineconeService) extractMetadata(match *pinecone.ScoredVector) models.ChunkResponse {
+	var chunk models.ChunkResponse
 
 	if match.Vector.Metadata != nil && match.Vector.Metadata.Fields != nil {
 		for key, val := range match.Vector.Metadata.Fields {
@@ -113,13 +111,10 @@ func (s *PineconeService) extractMetadata(match *pinecone.ScoredVector) models.C
 	return chunk
 }
 
-// setMetadataField establece un campo específico de los metadatos
-func (s *PineconeService) setMetadataField(chunk *models.ChunkResultado, key string, kind interface{}) {
+func (s *PineconeService) setMetadataField(chunk *models.ChunkResponse, key string, kind interface{}) {
+	chunk.ID = "01JF8K5EJX84S5J9SYG7Y2G8ZX"
+	chunk.Source = "Universidad de palermo"
 	switch key {
-	case "chunk_id":
-		if v, ok := kind.(*structpb.Value_StringValue); ok {
-			chunk.ChunkID = utils.CleanPointerFormat(v.StringValue)
-		}
 	case "title":
 		if v, ok := kind.(*structpb.Value_StringValue); ok {
 			chunk.Title = utils.CleanPointerFormat(v.StringValue)
@@ -128,14 +123,8 @@ func (s *PineconeService) setMetadataField(chunk *models.ChunkResultado, key str
 		if v, ok := kind.(*structpb.Value_StringValue); ok {
 			chunk.Text = utils.CleanPointerFormat(v.StringValue)
 		}
-	case "source_file":
-		if v, ok := kind.(*structpb.Value_StringValue); ok {
-			chunk.SourceFile = utils.CleanPointerFormat(v.StringValue)
-		}
 	case "start_sec":
 		chunk.StartSec = s.parseFloatFromMetadata(kind)
-	case "end_sec":
-		chunk.EndSec = s.parseFloatFromMetadata(kind)
 	}
 }
 
@@ -166,12 +155,4 @@ func (s *PineconeService) GetStats() (*models.StatsResponse, error) {
 		Dimension:     512,                      // Usar constante del config
 		Modelo:        "text-embedding-3-small", // Usar constante del config
 	}, nil
-}
-
-// cleanPointerFormat limpia el formato de puntero "&{valor}" que puede venir de Pinecone
-func cleanPointerFormat(s string) string {
-	if len(s) > 3 && s[:2] == "&{" && s[len(s)-1] == '}' {
-		return s[2 : len(s)-1]
-	}
-	return s
 }

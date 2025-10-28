@@ -25,7 +25,7 @@ func NewSearchUseCase(openaiService *services.OpenAIService, pineconeService *se
 }
 
 // Search realiza una búsqueda vectorial
-func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.BusquedaResponse, error) {
+func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchResponse, error) {
 	// Validar parámetros
 	if query == "" {
 		return nil, fmt.Errorf("query no puede estar vacío")
@@ -45,25 +45,24 @@ func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.BusquedaResp
 	costo := float64(tokens) * s.config.EmbeddingPricePer1K / 1000.0
 
 	// Buscar en Pinecone
-	resultados, err := s.pineconeService.Search(embedding, topK)
+	res, err := s.pineconeService.Search(embedding, topK)
 	if err != nil {
 		return nil, fmt.Errorf("error en búsqueda: %v", err)
 	}
 
-	// Filtrar por umbral de similitud
-	filtrados := s.filterByScore(resultados, s.config.MinScoreThreshold)
+	filtrados := s.filterByScore(res, s.config.MinScoreThreshold)
 
-	return &models.BusquedaResponse{
-		Query:      query,
-		Resultados: filtrados,
-		Total:      len(filtrados),
-		CostoUSD:   costo,
+	return &models.SearchResponse{
+		Query:    query,
+		Results:  filtrados,
+		Total:    len(filtrados),
+		CostoUSD: costo,
 	}, nil
 }
 
 // filterByScore filtra resultados por umbral de similitud
-func (s *SearchUseCaseImpl) filterByScore(resultados []models.ChunkResultado, threshold float64) []models.ChunkResultado {
-	filtrados := make([]models.ChunkResultado, 0, len(resultados))
+func (s *SearchUseCaseImpl) filterByScore(resultados []models.ChunkResponse, threshold float64) []models.ChunkResponse {
+	filtrados := make([]models.ChunkResponse, 0, len(resultados))
 	for _, r := range resultados {
 		if float64(r.Score) >= threshold {
 			filtrados = append(filtrados, r)

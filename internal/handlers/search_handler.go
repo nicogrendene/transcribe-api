@@ -8,12 +8,12 @@ import (
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
-func Buscar(searchUseCase usecases.SearchUseCase) gin.HandlerFunc {
+func Search(searchUseCase usecases.SearchUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var req models.BusquedaRequest
+		var req models.SearchRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, models.ErrorResponse{
-				Error: "Query requerido",
+				Error: "Query required",
 			})
 			return
 		}
@@ -27,7 +27,7 @@ func Buscar(searchUseCase usecases.SearchUseCase) gin.HandlerFunc {
 		response, err := searchUseCase.Search(req.Query, req.TopK)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-				Error:   "Error en búsqueda",
+				Error:   "error searching",
 				Details: err.Error(),
 			})
 			return

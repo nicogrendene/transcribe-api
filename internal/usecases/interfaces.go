@@ -3,7 +3,7 @@ package usecases
 import "github.com/ngrendenebos/scripts/transcribe-api/internal/models"
 
 type SearchUseCase interface {
-	Search(query string, topK int) (*models.BusquedaResponse, error)
+	Search(query string, topK int) (*models.SearchResponse, error)
 }
 
 type HealthUseCase interface {

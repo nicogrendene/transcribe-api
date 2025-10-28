@@ -62,6 +62,6 @@ func setupRoutes(r *gin.Engine, usecases Usecases) {
 	r.GET("/video/:id/subtitles", handlers.ServeSubtitles(usecases.VideoUseCase))
 	r.GET("/video/:id/summary", handlers.ServeSummary(usecases.VideoUseCase))
 	r.GET("/video/:id", handlers.ServeVideo(usecases.VideoUseCase))
-	r.POST("/buscar", handlers.Buscar(usecases.SearchUseCase))
+	r.POST("/search", handlers.Search(usecases.SearchUseCase))
 
 }
