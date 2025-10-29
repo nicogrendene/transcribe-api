@@ -37,43 +37,14 @@ func (v *VideoUseCaseImpl) GetVideos(ctx context.Context) ([]byte, error) {
 }
 
 func (v *VideoUseCaseImpl) GetVideo(ctx context.Context, filename string) (string, error) {
-	return v.GetVideoWithQuality(ctx, filename, "")
-}
-
-func (v *VideoUseCaseImpl) GetVideoWithQuality(ctx context.Context, filename string, quality string) (string, error) {
 	if !utils.ValidateFilename(filename) {
 		return "", fmt.Errorf("nombre de archivo inválido")
 	}
 
-	// Determinar el nombre del archivo basado en la calidad
-	var videoFile string
-	switch quality {
-	case "high", "1080p":
-		videoFile = "video_1080p.mp4"
-	case "medium", "720p":
-		videoFile = "video_720p.mp4"
-	case "low", "480p":
-		videoFile = "video_480p.mp4"
-	case "mobile", "360p":
-		videoFile = "video_360p.mp4"
-	default:
-		// Calidad por defecto
-		videoFile = "video.mp4"
-	}
+	videoPath := filepath.Join(v.config.VideosPath, filename, "video.mp4")
 
-	videoPath := filepath.Join(v.config.VideosPath, filename, videoFile)
-
-	// Si el archivo de calidad específica no existe, intentar con el archivo por defecto
 	if _, err := os.Stat(videoPath); os.IsNotExist(err) {
-		if quality != "" {
-			// Intentar con el archivo por defecto
-			videoPath = filepath.Join(v.config.VideosPath, filename, "video.mp4")
-			if _, err := os.Stat(videoPath); os.IsNotExist(err) {
-				return "", fmt.Errorf("archivo de video no encontrado")
-			}
-		} else {
-			return "", fmt.Errorf("archivo de video no encontrado")
-		}
+		return "", fmt.Errorf("archivo de video no encontrado")
 	}
 
 	return videoPath, nil
@@ -115,10 +86,10 @@ func (v *VideoUseCaseImpl) GetSummary(ctx context.Context, id string) (string, e
 	summaryPath := filepath.Join(v.config.VideosPath, id, "summary.txt")
 
 	file, err := os.Open(summaryPath)
+	defer file.Close()
 	if err != nil {
 		return "", fmt.Errorf("no se encontrado por archivo de summary.txt")
 	}
-	defer file.Close()
 
 	content, err := io.ReadAll(file)
 	if err != nil {

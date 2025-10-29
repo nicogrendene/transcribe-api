@@ -21,7 +21,6 @@ type StatsUseCase interface {
 type VideoUseCase interface {
 	GetVideos(ctx context.Context) ([]byte, error)
 	GetVideo(ctx context.Context, id string) (string, error)
-	GetVideoWithQuality(ctx context.Context, id string, quality string) (string, error)
 	GetSubtitles(ctx context.Context, id string) (string, error)
 	GetThumbnail(ctx context.Context, id string) (string, error)
 	GetSummary(ctx context.Context, id string) (string, error)

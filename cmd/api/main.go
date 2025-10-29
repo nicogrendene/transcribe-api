@@ -71,20 +71,9 @@ func setupRoutes(r *gin.Engine, usecases Usecases) {
 		c.Next()
 	})
 
-	// Middleware de compresión gzip
-	r.Use(middleware.GzipMiddleware())
-
-	// Middleware de cache para thumbnails
-	r.Use(middleware.ThumbnailCacheMiddleware())
-
-	// Middleware de cache para videos
-	r.Use(middleware.VideoCacheMiddleware())
-
 	r.GET("/health", handlers.HealthCheck(usecases.HealthUseCase))
 	r.GET("/stats", handlers.GetStats(usecases.StatsUseCase))
 	r.GET("/videos", handlers.GetVideos(usecases.VideoUseCase))
-	r.GET("/video/:id/metadata", handlers.GetVideoMetadata(usecases.VideoUseCase))
-	r.GET("/video/:id/info", handlers.GetVideoInfo(usecases.VideoUseCase))
 	r.GET("/video/:id/thumbnail", handlers.ServeThumbnail(usecases.VideoUseCase))
 	r.GET("/video/:id/subtitles", handlers.ServeSubtitles(usecases.VideoUseCase))
 	r.GET("/video/:id/summary", handlers.ServeSummary(usecases.VideoUseCase))
