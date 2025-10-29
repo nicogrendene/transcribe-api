@@ -1,9 +1,11 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/config"
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/log"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/services"
 )
@@ -25,7 +27,7 @@ func NewSearchUseCase(openaiService *services.OpenAIService, pineconeService *se
 }
 
 // Search realiza una búsqueda vectorial y genera una respuesta con OpenAI
-func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchResponse, error) {
+func (s *SearchUseCaseImpl) Search(ctx context.Context, query string, topK int) (*models.SearchResponse, error) {
 	// Validar parámetros
 	if query == "" {
 		return nil, fmt.Errorf("query no puede estar vacío")
@@ -36,7 +38,7 @@ func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchRespon
 	}
 
 	// Generar embedding
-	embedding, tokens, err := s.openaiService.GenerateEmbedding(query)
+	embedding, tokens, err := s.openaiService.GenerateEmbedding(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("error generando embedding: %v", err)
 	}
@@ -45,7 +47,7 @@ func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchRespon
 	costo := float64(tokens) * s.config.EmbeddingPricePer1K / 1000.0
 
 	// Buscar en Pinecone
-	res, err := s.pineconeService.Search(embedding, topK)
+	res, err := s.pineconeService.Search(ctx, embedding, topK)
 	if err != nil {
 		return nil, fmt.Errorf("error en búsqueda: %v", err)
 	}
@@ -64,10 +66,9 @@ func (s *SearchUseCaseImpl) Search(query string, topK int) (*models.SearchRespon
 		}
 
 		// Generar respuesta con OpenAI
-		answer, chatTokens, err := s.openaiService.GenerateAnswer(query, contextTexts)
+		answer, chatTokens, err := s.openaiService.GenerateAnswer(ctx, query, contextTexts)
 		if err != nil {
-			// Si falla la generación de respuesta, continuar sin ella
-			fmt.Printf("⚠️ Error generando respuesta: %v\n", err)
+			log.Error(ctx, "Error generando respuesta", log.Err(err))
 		} else {
 			generatedAnswer = answer
 			// Agregar costo de chat

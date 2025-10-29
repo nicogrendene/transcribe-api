@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
@@ -20,8 +21,8 @@ func NewStatsUseCase(pineconeService *services.PineconeService) StatsUseCase {
 }
 
 // GetStats obtiene las estadísticas del sistema
-func (s *StatsUseCaseImpl) GetStats() (*models.StatsResponse, error) {
-	stats, err := s.pineconeService.GetStats()
+func (s *StatsUseCaseImpl) GetStats(ctx context.Context) (*models.StatsResponse, error) {
+	stats, err := s.pineconeService.GetStats(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error obteniendo estadísticas: %v", err)
 	}

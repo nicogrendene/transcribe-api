@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/log"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
@@ -13,6 +14,8 @@ import (
 // ServeSubtitles retorna un handler para servir subtítulos
 func ServeSubtitles(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := log.With(c.Request.Context(), log.UseCase("get_subtitles"))
+
 		id := c.Param("id")
 		if id == "" {
 			c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -21,7 +24,7 @@ func ServeSubtitles(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 			return
 		}
 
-		subtitlePath, err := videoUseCase.GetSubtitles(id)
+		subtitlePath, err := videoUseCase.GetSubtitles(ctx, id)
 		if err != nil {
 			c.JSON(http.StatusNotFound, models.ErrorResponse{
 				Error:   "Subtitle file not found",

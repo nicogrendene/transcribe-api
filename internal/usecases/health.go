@@ -1,6 +1,8 @@
 package usecases
 
 import (
+	"context"
+
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/services"
 )
@@ -15,7 +17,7 @@ func NewHealthUseCase(pineconeService *services.PineconeService) HealthUseCase {
 	}
 }
 
-func (h *HealthUseCaseImpl) CheckHealth() (*models.HealthResponse, error) {
+func (h *HealthUseCaseImpl) CheckHealth(ctx context.Context) (*models.HealthResponse, error) {
 	if h.pineconeService == nil {
 		return &models.HealthResponse{
 			Status:  "error",

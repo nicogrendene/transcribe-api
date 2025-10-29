@@ -4,12 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/log"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/usecases"
 )
 
 func ServeSummary(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := log.With(c.Request.Context(), log.UseCase("get_summary"))
+
 		id := c.Param("id")
 		if id == "" {
 			c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -18,7 +21,7 @@ func ServeSummary(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 			return
 		}
 
-		summary, err := videoUseCase.GetSummary(id)
+		summary, err := videoUseCase.GetSummary(ctx, id)
 		if err != nil {
 			c.JSON(http.StatusNotFound, models.ErrorResponse{
 				Error:   "Summary file not found",

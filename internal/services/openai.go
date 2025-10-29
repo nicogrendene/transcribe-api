@@ -2,12 +2,13 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/log"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
 )
 
@@ -47,7 +48,7 @@ func NewOpenAIService(apiKey, model string, pricePer1K float64, chatModel string
 }
 
 // GenerateEmbedding genera un embedding para el texto dado
-func (s *OpenAIService) GenerateEmbedding(text string) ([]float32, int, error) {
+func (s *OpenAIService) GenerateEmbedding(ctx context.Context, text string) ([]float32, int, error) {
 	reqBody := models.OpenAIEmbeddingRequest{
 		Input:      text,
 		Model:      s.Model,
@@ -93,16 +94,19 @@ func (s *OpenAIService) GenerateEmbedding(text string) ([]float32, int, error) {
 
 	tokens := embResp.Usage.TotalTokens
 	costo := float64(tokens) * s.PricePer1K / 1000.0
-	log.Printf("💰 Embedding: %d tokens, $%.6f", tokens, costo)
+	log.Info(ctx, "Embedding generated",
+		log.Any("tokens", tokens),
+		log.Float("costo", costo),
+	)
 
 	return embResp.Data[0].Embedding, tokens, nil
 }
 
 // GenerateAnswer genera una respuesta usando el modelo de chat de OpenAI
-func (s *OpenAIService) GenerateAnswer(query string, contextTexts []string) (string, int, error) {
-	context := ""
+func (s *OpenAIService) GenerateAnswer(ctx context.Context, query string, contextTexts []string) (string, int, error) {
+	searchContext := ""
 	for i, text := range contextTexts {
-		context += fmt.Sprintf("Fragmento %d: %s\n\n", i+1, text)
+		searchContext += fmt.Sprintf("Fragmento %d: %s\n\n", i+1, text)
 	}
 
 	systemPrompt := `Eres un asistente que responde preguntas basándote únicamente en el contexto proporcionado. 
@@ -110,7 +114,7 @@ Responde de manera clara y concisa. Si la información no está disponible en el
 indica que no tienes suficiente información para responder la pregunta.
 
 Contexto:
-` + context
+` + searchContext
 
 	messages := []models.Message{
 		{
@@ -169,7 +173,7 @@ Contexto:
 
 	tokens := chatResp.Usage.TotalTokens
 	costo := float64(tokens) * s.ChatPricePer1K / 1000.0
-	log.Printf("Chat: %d tokens, $%.6f", tokens, costo)
+	log.Info(ctx, "Got answer", log.Any("tokens", tokens), log.Float("costo", costo))
 
 	return chatResp.Choices[0].Message.Content, tokens, nil
 }

@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -20,7 +21,7 @@ func NewVideoUseCase(config config.Config) VideoUseCase {
 	}
 }
 
-func (v *VideoUseCaseImpl) GetVideos() ([]byte, error) {
+func (v *VideoUseCaseImpl) GetVideos(ctx context.Context) ([]byte, error) {
 	jsonFile, err := os.Open("videos.json")
 	if err != nil {
 		return nil, fmt.Errorf("no se pudo leer el archivo de videos: %v", err)
@@ -35,7 +36,7 @@ func (v *VideoUseCaseImpl) GetVideos() ([]byte, error) {
 	return jsonData, nil
 }
 
-func (v *VideoUseCaseImpl) GetVideo(filename string) (string, error) {
+func (v *VideoUseCaseImpl) GetVideo(ctx context.Context, filename string) (string, error) {
 	if !utils.ValidateFilename(filename) {
 		return "", fmt.Errorf("nombre de archivo inválido")
 	}
@@ -49,7 +50,7 @@ func (v *VideoUseCaseImpl) GetVideo(filename string) (string, error) {
 	return videoPath, nil
 }
 
-func (v *VideoUseCaseImpl) GetSubtitles(id string) (string, error) {
+func (v *VideoUseCaseImpl) GetSubtitles(ctx context.Context, id string) (string, error) {
 	if !utils.ValidateFilename(id) {
 		return "", fmt.Errorf("nombre de archivo inválido")
 	}
@@ -63,7 +64,7 @@ func (v *VideoUseCaseImpl) GetSubtitles(id string) (string, error) {
 	return subtitlePath, nil
 }
 
-func (v *VideoUseCaseImpl) GetThumbnail(id string) (string, error) {
+func (v *VideoUseCaseImpl) GetThumbnail(ctx context.Context, id string) (string, error) {
 	if !utils.ValidateFilename(id) {
 		return "", fmt.Errorf("nombre de archivo inválido")
 	}
@@ -77,7 +78,7 @@ func (v *VideoUseCaseImpl) GetThumbnail(id string) (string, error) {
 	return thumbnailPath, nil
 }
 
-func (v *VideoUseCaseImpl) GetSummary(id string) (string, error) {
+func (v *VideoUseCaseImpl) GetSummary(ctx context.Context, id string) (string, error) {
 	if !utils.ValidateFilename(id) {
 		return "", fmt.Errorf("nombre de archivo inválido")
 	}

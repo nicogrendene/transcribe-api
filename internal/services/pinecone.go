@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/log"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
 	"github.com/ngrendenebos/scripts/transcribe-api/pkg/utils"
 	"github.com/pinecone-io/go-pinecone/pinecone"
@@ -59,7 +59,7 @@ func NewPineconeService(apiKey, indexName string) (*PineconeService, error) {
 		return nil, fmt.Errorf("error obteniendo stats: %v", err)
 	}
 
-	log.Printf("✅ Índice '%s' conectado (%d vectores)", indexName, stats.TotalVectorCount)
+	log.Info(context.Background(), "Conectado a Pinecone", log.Any("index", index), log.Any("stats", stats))
 
 	return &PineconeService{
 		Client:    client,
@@ -69,8 +69,7 @@ func NewPineconeService(apiKey, indexName string) (*PineconeService, error) {
 }
 
 // Search realiza una búsqueda vectorial en Pinecone
-func (s *PineconeService) Search(embedding []float32, topK int) ([]models.ChunkResponse, error) {
-	ctx := context.Background()
+func (s *PineconeService) Search(ctx context.Context, embedding []float32, topK int) ([]models.ChunkResponse, error) {
 	queryReq := &pinecone.QueryByVectorValuesRequest{
 		Vector:          embedding,
 		TopK:            uint32(topK),
@@ -142,8 +141,7 @@ func (s *PineconeService) parseFloatFromMetadata(kind interface{}) float64 {
 }
 
 // GetStats obtiene las estadísticas del índice
-func (s *PineconeService) GetStats() (*models.StatsResponse, error) {
-	ctx := context.Background()
+func (s *PineconeService) GetStats(ctx context.Context) (*models.StatsResponse, error) {
 	stats, err := s.Index.DescribeIndexStats(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error obteniendo stats: %v", err)

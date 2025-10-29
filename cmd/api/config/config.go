@@ -1,12 +1,13 @@
 package config
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
 	"github.com/joho/godotenv"
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/log"
 )
 
 // Config contiene toda la configuración de la aplicación
@@ -97,20 +98,7 @@ func LoadConfig() (Config, error) {
 		return config, err
 	}
 
-	log.Println("✅ Configuración cargada correctamente")
-	log.Println("OPENAI_API_KEY: " + config.OpenAIAPIKey)
-	log.Println("PINECONE_API_KEY: " + config.PineconeAPIKey)
-	log.Println("INDEX_NAME: " + config.IndexName)
-	log.Println("EMBEDDING_MODEL: " + config.EmbeddingModel)
-	log.Println("EMBEDDING_DIMENSION: " + strconv.Itoa(config.EmbeddingDimension))
-	log.Println("CHAT_MODEL: " + config.ChatModel)
-	log.Println("MIN_SCORE_THRESHOLD: " + strconv.FormatFloat(config.MinScoreThreshold, 'f', -1, 64))
-	log.Println("MAX_TOP_K: " + strconv.Itoa(config.MaxTopK))
-	log.Println("DEFAULT_TOP_K: " + strconv.Itoa(config.DefaultTopK))
-	log.Println("EMBEDDING_PRICE_PER_1K: " + strconv.FormatFloat(config.EmbeddingPricePer1K, 'f', -1, 64))
-	log.Println("CHAT_PRICE_PER_1K: " + strconv.FormatFloat(config.ChatPricePer1K, 'f', -1, 64))
-	log.Println("PORT: " + config.Port)
-	log.Println("VIDEOS_PATH: " + config.VideosPath)
+	log.Info(context.Background(), "Configuracion cargada correctamente", log.Any("conf", config))
 
 	return config, nil
 }

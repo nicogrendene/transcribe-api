@@ -1,23 +1,27 @@
 package usecases
 
-import "github.com/ngrendenebos/scripts/transcribe-api/internal/models"
+import (
+	"context"
+
+	"github.com/ngrendenebos/scripts/transcribe-api/internal/models"
+)
 
 type SearchUseCase interface {
-	Search(query string, topK int) (*models.SearchResponse, error)
+	Search(ctx context.Context, query string, topK int) (*models.SearchResponse, error)
 }
 
 type HealthUseCase interface {
-	CheckHealth() (*models.HealthResponse, error)
+	CheckHealth(ctx context.Context) (*models.HealthResponse, error)
 }
 
 type StatsUseCase interface {
-	GetStats() (*models.StatsResponse, error)
+	GetStats(ctx context.Context) (*models.StatsResponse, error)
 }
 
 type VideoUseCase interface {
-	GetVideos() ([]byte, error)
-	GetVideo(id string) (string, error)
-	GetSubtitles(id string) (string, error)
-	GetThumbnail(id string) (string, error)
-	GetSummary(id string) (string, error)
+	GetVideos(ctx context.Context) ([]byte, error)
+	GetVideo(ctx context.Context, id string) (string, error)
+	GetSubtitles(ctx context.Context, id string) (string, error)
+	GetThumbnail(ctx context.Context, id string) (string, error)
+	GetSummary(ctx context.Context, id string) (string, error)
 }

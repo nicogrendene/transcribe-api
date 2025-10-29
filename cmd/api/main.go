@@ -1,27 +1,32 @@
 package main
 
 import (
-	"log"
+	"context"
+	"io"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/config"
 	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/dependencies"
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/log"
+	"github.com/ngrendenebos/scripts/transcribe-api/cmd/api/middleware"
 	"github.com/ngrendenebos/scripts/transcribe-api/internal/handlers"
 )
 
 func main() {
-	log.Println("🚀 Iniciando API de Transcripción...")
+	// Inicializar logger
+	logger := log.Initialize()
+	log.DefaultLogger = logger
 
 	// Cargar configuración
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Error cargando configuración: %v", err)
+		log.Fatal(context.Background(), "Error cargando configuración", log.Err(err))
 	}
 
 	// Inicializar dependencias
 	deps, err := dependencies.NewDependencies(cfg)
 	if err != nil {
-		log.Fatalf("❌ Error inicializando dependencias: %v", err)
+		log.Fatal(context.Background(), "Error inicializando dependencia", log.Err(err))
 	}
 
 	// Inicializar use cases
@@ -29,15 +34,26 @@ func main() {
 
 	// Configurar Gin
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+
+	// Deshabilitar logs de Gin
+	gin.DefaultWriter = io.Discard
+	gin.DefaultErrorWriter = io.Discard
+	gin.DisableConsoleColor()
+
+	// Usar gin.New() en lugar de gin.Default() para evitar middlewares automáticos
+	r := gin.New()
+
+	// Configurar middlewares personalizados
+	r.Use(middleware.RequestLoggingMiddleware())
+	r.Use(middleware.RecoveryWithLogging())
 
 	// Configurar rutas
 	setupRoutes(r, appUsecases)
 
-	log.Println("✅ Iniciando servidor en el puerto " + cfg.Port)
+	log.Info(context.Background(), "Iniciando servidor en el puerto", log.Any("port", cfg.Port))
 	// Iniciar servidor
 	if err := r.Run(":" + cfg.Port); err != nil {
-		log.Fatalf("❌ Error iniciando servidor: %v", err)
+		log.Fatal(context.Background(), "Error iniciando servidor", log.Err(err))
 	}
 }
 
