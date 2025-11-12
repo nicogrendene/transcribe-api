@@ -24,13 +24,18 @@ func ServeThumbnail(videoUseCase usecases.VideoUseCase) gin.HandlerFunc {
 			</svg>`
 
 			c.Header("Content-Type", "image/svg+xml")
-			c.Header("Cache-Control", "public, max-age=3600")
+			c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+			c.Header("Pragma", "no-cache")
+			c.Header("Expires", "0")
+			c.Header("Access-Control-Allow-Origin", "*")
 			c.String(http.StatusOK, svgPlaceholder)
 			return
 		}
 
 		c.Header("Content-Type", "image/jpeg")
-		c.Header("Cache-Control", "public, max-age=3600")
+		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+		c.Header("Pragma", "no-cache")
+		c.Header("Expires", "0")
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.File(thumbnailPath)
 	}
