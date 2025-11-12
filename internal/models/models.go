@@ -9,7 +9,9 @@ type ChunkResponse struct {
 	ID       string  `json:"id"`
 	Title    string  `json:"title"`
 	Text     string  `json:"text"`
+	Video    string  `json:"video"`
 	Source   string  `json:"source"`
+	URL      string  `json:"url"`
 	StartSec float64 `json:"start_sec"`
 	Score    float32 `json:"score"`
 }
@@ -79,4 +81,17 @@ type OpenAIChatResponse struct {
 		CompletionTokens int `json:"completion_tokens"`
 		TotalTokens      int `json:"total_tokens"`
 	} `json:"usage"`
+}
+
+type Video struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Source      string `json:"source"`
+	Duration    string `json:"duration"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
+}
+
+type VideosData struct {
+	Videos []Video `json:"videos"`
 }

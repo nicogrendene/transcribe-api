@@ -3,9 +3,18 @@
     {
       "id": "01JF8K5EJX84S5J9SYG7Y2G8ZX",
       "title": "Diego Esteve, codirector de la Licenciatura en Ciberseguridad UP, en H4ck3d Security Conference",
-      "source": "quien lo subió",
+      "source": "Universidad de Palermo",
       "duration": "1928",
-      "description": "Conferencia sobre Zero Trust y ciberseguridad"
+      "description": "La Facultad de Ingeniería UP y Securetia convocaron a expertos para debatir y brindar demostraciones prácticas sobre el panorama, los desafíos y la prevención de la seguridad informática. Organizado anualmente por la Universidad de Palermo en conjunto con Securetia, Diego Esteve, CISO en Prisma Medios de Pago y codirector de la Licenciatura en Ciberseguridad UP, expuso “Nunca confíes, siempre verifica”: el mantra de la ciberseguridad moderna. Conocé más: https://www.palermo.edu/h4ck3d/",
+      "url": "1mzXvGhbpdW5iH7A4kjv1zRTTYmvmcw4E"
+    },
+    {
+      "id": "01K9TAKD6ZDKY4DGNE2RQGF5D3",
+      "title": "Martín Anzaldo, líder de ciberseguridad en Movistar, estuvo presente en H4ck3d Security Conference",
+      "source": "Universidad de Palermo",
+      "duration": "2130",
+      "description": "Martín Anzaldo, Líder de ciberseguridad en Movistar habló acerca de las soluciones informáticas como respuesta a incidentes de bajo costo, en una nueva edición de H4ck3d Security Conference, organizada por la Facultad de Ingeniería de la Universidad de Palermo, en conjunto con Securetia. Conocé más: https://www.palermo.edu/h4ck3d/",
+      "url": "1jmDGhelQ2lnjgPayCCaAGDWabyeiBR55"
     }
   ]
 }
